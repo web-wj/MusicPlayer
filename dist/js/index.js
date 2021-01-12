@@ -69,7 +69,9 @@
             this.controlBtns[0].addEventListener('touchend', function() {
                 //改变当前索引对应的音乐信息
                 This.dataList[This.indexObj.index].isLike = !This.dataList[This.indexObj.index].isLike;
-                This.loadMusic(This.indexObj.index);
+                var isLike = This.dataList[This.indexObj.index].isLike;
+                document.querySelectorAll('.control li')[0].className = isLike ? 'liking' : '';
+
             });
 
             //上一首
