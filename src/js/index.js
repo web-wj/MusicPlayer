@@ -3,7 +3,6 @@
         this.wrap = dom; //播放器的容器（用于加载listControl模块）
         this.dataList = []; //存储请求到的数据
 
-        //this.now = 0;	//歌曲的索引
         this.indexObj = null; //索引值对象（用于切歌）
         this.rotateTimer = null; //旋转唱片的定时器
         this.curIndex = 0; //当前播放歌曲的索引值
@@ -36,7 +35,7 @@
                     This.musicControl(); //添加音乐操作功能
                 },
                 error: function() {
-                    console.log('数据请求失败');
+                    window.alert('数据请求失败');
                 }
             });
         },
@@ -58,6 +57,13 @@
         },
         musicControl: function() { //控制音乐（上一首、下一首。。。）
             var This = this;
+            //改变是否喜欢
+            this.controlBtns[0].addEventListener('touchend', function() {
+                //改变当前索引对应的音乐信息
+                This.dataList[This.indexObj.index].isLike = !This.dataList[This.indexObj.index].isLike;
+                This.loadMusic(This.indexObj.index);
+            });
+
             //上一首
             this.controlBtns[1].addEventListener('touchend', function() {
                 player.music.status = 'play';
