@@ -7,6 +7,9 @@
         this.rotateTimer = null; //旋转唱片的定时器
         this.curIndex = 0; //当前播放歌曲的索引值
         this.list = null; //列表切歌对象（在listPlay里赋了值）
+
+        this.progress = player.progress.pro(); //进度条对象
+
     }
     MusicPlayer.prototype = {
         init: function() { //初始化
@@ -33,6 +36,7 @@
                     This.loadMusic(This.indexObj.index); //加载音乐 
 
                     This.musicControl(); //添加音乐操作功能
+                    This.dragProgress(); //添加进度条拖拽功能
                 },
                 error: function() {
                     window.alert('数据请求失败');
@@ -42,12 +46,16 @@
         loadMusic: function(index) { //加载音乐
             player.render(this.dataList[index]); //渲染图片，歌曲信息...
             player.music.load(this.dataList[index].audioSrc);
+            //渲染歌曲的总时长
+            this.progress.renderAllTime(this.dataList[index].duration);
 
             //播放音乐（只有音乐的状态为play的时候才能播放）
             if (player.music.status == 'play') {
                 player.music.play();
                 this.controlBtns[2].className = 'playing'; //按钮状态变成播放状态
                 this.imgRotate(0); //旋转图片
+
+                this.progress.move(0);
             }
 
             //改变列表里歌曲的选中状态
@@ -79,6 +87,7 @@
                     player.music.pause(); //歌曲暂停
                     this.className = ''; //按钮变成暂停状态
                     This.imgStop(); //停止旋转图片
+                    This.progress.stop(); //暂停进度条
                 } else { //歌曲的状态为暂停，点击后要播放
                     player.music.play(); //歌曲播放
                     this.className = 'playing'; //按钮变成播放状态
@@ -86,6 +95,9 @@
                     //第二次播放的时候需要加上上一次旋转的角度。但是第一次的时候这个角度是没有的，取不到。所以做了一个容错处理
                     var deg = This.record.dataset.rotate || 0;
                     This.imgRotate(deg); //旋转图片
+
+                    //让进度条开始走
+                    This.progress.move();
                 }
             });
 
@@ -138,6 +150,30 @@
                     This.list.slideDown(); //列表消失
                 });
             });
+        },
+        //进度条拖拽的功能实现
+        dragProgress: function() {
+            var This = this;
+            var circle = player.progress.drag(this.progress.circle);
+
+            circle.init();
+            circle.start = function() {
+                //按下的时候
+            }
+            circle.move = function(pre) {
+                This.progress.update(pre);
+            }
+            circle.end = function(pre) {
+                var cutTime = pre * This.dataList[This.indexObj.index].duration;
+                player.music.playTo(cutTime);
+                This.progress.move(pre);
+
+                player.music.play();
+                This.controlBtns[2].className = 'playing';
+                var deg = This.record.dataset.rotate || 0;
+                This.imgRotate(deg); //旋转图片
+
+            }
         }
     }
 
