@@ -37,6 +37,7 @@
 
                     This.musicControl(); //添加音乐操作功能
                     This.dragProgress(); //添加进度条拖拽功能
+                    player.music.end(This.nextPlay)
                 },
                 error: function() {
                     window.alert('数据请求失败');
@@ -176,6 +177,11 @@
                 This.imgRotate(deg); //旋转图片
 
             }
+        },
+        //音乐播放完成自动切换下一首
+        nextPlay: function() {
+            player.music.status = 'play';
+            this.loadMusic(this.indexObj.next());
         }
     }
 
