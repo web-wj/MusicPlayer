@@ -37,7 +37,7 @@
 
                     This.musicControl(); //添加音乐操作功能
                     This.dragProgress(); //添加进度条拖拽功能
-                    player.music.end(This.nextPlay)
+                    This.nextPlay(); //添加音乐播放完成自动切歌功能
                 },
                 error: function() {
                     window.alert('数据请求失败');
@@ -180,8 +180,11 @@
         },
         //音乐播放完成自动切换下一首
         nextPlay: function() {
-            player.music.status = 'play';
-            this.loadMusic(this.indexObj.next());
+            var This = this;
+            player.music.end(function() {
+                player.music.status = 'play';
+                This.loadMusic(This.indexObj.next());
+            })
         }
     }
 
